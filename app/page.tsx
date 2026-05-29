@@ -18,12 +18,9 @@ export default function HomePage() {
   const [appliedSeo, setAppliedSeo] = useState<string[]>([])
   const [productInput, setProductInput] = useState<ProductFormValue>({
     product_name: "",
-    material: "",
     featuresText: "",
+    customAttributes: [],
     marketplace: "US",
-    brand: "",
-    color: "",
-    dimensions: "",
     target_audience: ""
   })
   const [images, setImages] = useState<File[]>([])
@@ -123,7 +120,6 @@ export default function HomePage() {
                 const form = new FormData()
                 images.forEach((f) => form.append("images", f, f.name))
                 form.append("product_name", value.product_name)
-                form.append("material", value.material)
                 form.append(
                   "features",
                   JSON.stringify(
@@ -134,10 +130,13 @@ export default function HomePage() {
                   )
                 )
                 form.append("marketplace", value.marketplace)
-                if (value.brand.trim()) form.append("brand", value.brand.trim())
-                if (value.color.trim()) form.append("color", value.color.trim())
-                if (value.dimensions.trim()) form.append("dimensions", value.dimensions.trim())
                 if (value.target_audience.trim()) form.append("target_audience", value.target_audience.trim())
+                if (value.customAttributes.length) {
+                  const rows = value.customAttributes
+                    .map((r) => ({ key: r.key.trim(), type: r.type, value: r.value }))
+                    .filter((r) => r.key.length > 0)
+                  if (rows.length) form.append("custom_attributes", JSON.stringify(rows))
+                }
 
                 const res = await fetch("/api/generate?debug=1", { method: "POST", body: form })
                 const data = await res.json()
@@ -223,7 +222,7 @@ export default function HomePage() {
         Listing generation uses DashScope text generation. The system does not persist historical outputs or input context across runs.
       </footer>
 
-      {debugInfo ? <DebugDrawer value={debugInfo} /> : null}
+      <DebugDrawer value={debugInfo} />
     </main>
   )
 }

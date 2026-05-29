@@ -11,7 +11,8 @@ export async function featureExpansionAgent(ctx: AgentContext): Promise<AgentCon
   const input = {
     seller_features: ctx.input.features,
     listing: ctx.result ?? null,
-    weakness: ctx.seoEngine?.weakness ?? []
+    weakness: ctx.seoEngine?.weakness ?? [],
+    custom_attributes: ctx.input.custom_attributes ?? []
   }
 
   try {
@@ -52,4 +53,3 @@ export async function featureExpansionAgent(ctx: AgentContext): Promise<AgentCon
     throw err
   }
 }
-

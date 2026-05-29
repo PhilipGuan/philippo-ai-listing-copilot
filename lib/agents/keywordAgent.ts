@@ -13,8 +13,9 @@ const toWords = (value: string) =>
 export async function keywordAgent(ctx: AgentContext): Promise<AgentContext> {
   const base = uniq([
     ...toWords(ctx.input.product_name),
-    ...toWords(ctx.input.material),
-    ...ctx.input.features.flatMap(toWords)
+    ...toWords(ctx.input.material ?? ""),
+    ...ctx.input.features.flatMap(toWords),
+    ...(ctx.input.custom_attributes ?? []).flatMap((a) => toWords(`${a.key ?? ""} ${a.value ?? ""}`))
   ])
 
   const primary = uniq([base.slice(0, 2).join(" "), base.slice(2, 4).join(" ")].filter((v) => v.trim().length > 0))
@@ -48,7 +49,8 @@ export async function keywordAgent(ctx: AgentContext): Promise<AgentContext> {
           content: JSON.stringify(
             {
               product: ctx.product,
-              marketplace: ctx.input.marketplace
+              marketplace: ctx.input.marketplace,
+              custom_attributes: ctx.input.custom_attributes ?? []
             },
             null,
             2

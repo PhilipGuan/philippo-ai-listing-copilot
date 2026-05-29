@@ -5,10 +5,13 @@ const normalize = (value: string) => value.trim().replace(/\s+/g, " ")
 
 export async function productAgent(ctx: AgentContext): Promise<AgentContext> {
   const selling_points = ctx.input.features.map(normalize).filter(Boolean).slice(0, 8)
+  const materialFromAttributes =
+    (ctx.input.custom_attributes ?? []).find((a) => String(a.key).trim().toLowerCase() === "material")?.value ?? ""
+  const materialCandidate = normalize(ctx.input.material ?? "") || normalize(materialFromAttributes)
 
   const fallback: ProductUnderstanding = {
     category: "General",
-    material: normalize(ctx.input.material),
+    material: materialCandidate,
     selling_points: selling_points.length >= 3 ? selling_points : [...selling_points, "Durable", "Easy to use"].slice(0, 3),
     target_customer: normalize(ctx.input.target_audience ?? "General")
   }
@@ -29,9 +32,10 @@ export async function productAgent(ctx: AgentContext): Promise<AgentContext> {
           content: JSON.stringify(
             {
               product_name: ctx.input.product_name,
-              material: ctx.input.material,
+              material: materialCandidate,
               features: ctx.input.features,
-              target_audience: ctx.input.target_audience ?? ""
+              target_audience: ctx.input.target_audience ?? "",
+              custom_attributes: ctx.input.custom_attributes ?? []
             },
             null,
             2

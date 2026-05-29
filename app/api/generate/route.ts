@@ -25,6 +25,28 @@ const parseFeatures = (value: string) => {
     .filter(Boolean)
 }
 
+const parseCustomAttributes = (value: string) => {
+  const trimmed = value.trim()
+  if (!trimmed) return undefined
+  try {
+    const parsed = JSON.parse(trimmed)
+    if (!Array.isArray(parsed)) return undefined
+    const allowed = new Set(["text", "multiline", "select"])
+    const normalized = parsed
+      .map((v) => v as Record<string, unknown>)
+      .map((v) => ({
+        key: typeof v.key === "string" ? v.key.trim() : "",
+        type: typeof v.type === "string" ? v.type : "text",
+        value: typeof v.value === "string" ? v.value : ""
+      }))
+      .filter((v) => v.key.length > 0 && allowed.has(v.type))
+      .map((v) => ({ ...v, type: v.type as "text" | "multiline" | "select" }))
+    return normalized.length ? normalized : undefined
+  } catch {
+    return undefined
+  }
+}
+
 export async function POST(req: Request) {
   const url = new URL(req.url)
   const strict = process.env.STRICT_LLM === "1"
@@ -50,13 +72,11 @@ export async function POST(req: Request) {
     const product_name = parseString(form.get("product_name")).trim()
     const material = parseString(form.get("material")).trim()
     const featuresRaw = parseString(form.get("features"))
+    const customAttributesRaw = parseString(form.get("custom_attributes"))
     const marketplaceRaw = parseString(form.get("marketplace")).trim()
 
     if (!product_name) {
       return NextResponse.json({ message: "Missing product name." }, { status: 400 })
-    }
-    if (!material) {
-      return NextResponse.json({ message: "Missing material." }, { status: 400 })
     }
 
     const features = parseFeatures(featuresRaw)
@@ -69,16 +89,18 @@ export async function POST(req: Request) {
     }
 
     const imageInputs = await Promise.all(images.slice(0, 1).map(async (img) => ({ mime: img.type, dataUrl: await toDataUrl(img) })))
+    const custom_attributes = parseCustomAttributes(customAttributesRaw)
 
     const input: GenerateRequest = {
       product_name,
-      material,
+      material: material || undefined,
       features,
       marketplace: "US",
       brand: parseString(form.get("brand")).trim() || undefined,
       color: parseString(form.get("color")).trim() || undefined,
       dimensions: parseString(form.get("dimensions")).trim() || undefined,
       target_audience: parseString(form.get("target_audience")).trim() || undefined,
+      custom_attributes,
       images: imageInputs
     }
 

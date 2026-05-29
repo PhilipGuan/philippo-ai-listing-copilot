@@ -12,7 +12,8 @@ export async function seoWeaknessAnalysisAgent(ctx: AgentContext): Promise<Agent
     evaluation: ctx.evaluation,
     keyword_context: ctx.keywords,
     keyword_coverage: ctx.seoOpportunity ?? null,
-    image_context: ctx.vision ?? null
+    image_context: ctx.vision ?? null,
+    custom_attributes: ctx.input.custom_attributes ?? []
   }
 
   try {

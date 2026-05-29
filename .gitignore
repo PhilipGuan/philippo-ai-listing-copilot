@@ -11,3 +11,4 @@ yarn-error.log*
 .xdg_config
 __pycache__/
 *.py[cod]
+imagesForTest/

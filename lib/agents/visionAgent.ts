@@ -26,8 +26,8 @@ export async function visionAgent(ctx: AgentContext): Promise<AgentContext> {
   const userText = JSON.stringify(
     {
       product_name: ctx.input.product_name,
-      material: ctx.input.material,
-      features: ctx.input.features
+      features: ctx.input.features,
+      custom_attributes: ctx.input.custom_attributes ?? []
     },
     null,
     2

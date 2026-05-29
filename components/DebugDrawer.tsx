@@ -3,13 +3,16 @@
 import { useEffect, useMemo, useState } from "react"
 
 type Props = {
-  value: unknown
+  value: unknown | null
 }
 
 export function DebugDrawer({ value }: Props) {
   const [open, setOpen] = useState(false)
 
-  const text = useMemo(() => JSON.stringify(value, null, 2), [value])
+  const text = useMemo(() => {
+    if (value == null) return JSON.stringify({ message: "No debug info yet. Click Generate to populate _debug." }, null, 2)
+    return JSON.stringify(value, null, 2)
+  }, [value])
 
   useEffect(() => {
     if (!open) return
@@ -64,4 +67,3 @@ export function DebugDrawer({ value }: Props) {
     </>
   )
 }
-

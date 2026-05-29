@@ -11,7 +11,8 @@ export async function customerIntentExpansionAgent(ctx: AgentContext): Promise<A
   const input = {
     vision_context: ctx.vision ?? null,
     target_audience: ctx.input.target_audience ?? "",
-    weakness: ctx.seoEngine?.weakness ?? []
+    weakness: ctx.seoEngine?.weakness ?? [],
+    custom_attributes: ctx.input.custom_attributes ?? []
   }
 
   try {
@@ -52,4 +53,3 @@ export async function customerIntentExpansionAgent(ctx: AgentContext): Promise<A
     throw err
   }
 }
-

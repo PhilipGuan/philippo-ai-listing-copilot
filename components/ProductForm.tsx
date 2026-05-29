@@ -3,15 +3,13 @@
 import { useEffect, useMemo, useState, type RefObject } from "react"
 import type { Marketplace } from "@/types/listing"
 import { ImageCarousel } from "@/components/ImageCarousel"
+import { ProductAttributesEditor, type ProductAttributeRow } from "@/components/ProductAttributesEditor"
 
 export type ProductFormValue = {
   product_name: string
-  material: string
   featuresText: string
+  customAttributes: ProductAttributeRow[]
   marketplace: Marketplace
-  brand: string
-  color: string
-  dimensions: string
   target_audience: string
 }
 
@@ -86,12 +84,11 @@ export function ProductForm({ disabled, onSubmit, value, onChange, images, onIma
   const canSubmit = useMemo(() => {
     if (disabled) return false
     if (!value.product_name.trim()) return false
-    if (!value.material.trim()) return false
     if (featuresCount < 1) return false
     if (images.length < 1 || images.length > 5) return false
     if (imageErrors.length) return false
     return true
-  }, [disabled, value.product_name, value.material, featuresCount, images.length, imageErrors.length])
+  }, [disabled, value.product_name, featuresCount, images.length, imageErrors.length])
 
   return (
     <form
@@ -148,15 +145,6 @@ export function ProductForm({ disabled, onSubmit, value, onChange, images, onIma
             onChange={(e) => onChange({ ...value, product_name: e.target.value })}
           />
         </div>
-        <div className="space-y-2">
-          <div className="text-xs text-white/60">Material</div>
-          <input
-            disabled={disabled}
-            className="w-full rounded-md border border-white/10 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-white/30"
-            value={value.material}
-            onChange={(e) => onChange({ ...value, material: e.target.value })}
-          />
-        </div>
       </div>
 
       <div className="space-y-2">
@@ -173,6 +161,12 @@ export function ProductForm({ disabled, onSubmit, value, onChange, images, onIma
         />
       </div>
 
+      <ProductAttributesEditor
+        disabled={disabled}
+        value={value.customAttributes}
+        onChange={(next) => onChange({ ...value, customAttributes: next })}
+      />
+
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
         <div className="space-y-2">
           <div className="text-xs text-white/60">Marketplace</div>
@@ -184,36 +178,6 @@ export function ProductForm({ disabled, onSubmit, value, onChange, images, onIma
           >
             <option value="US">US</option>
           </select>
-        </div>
-        <div className="space-y-2">
-          <div className="text-xs text-white/60">Brand (optional)</div>
-          <input
-            disabled={disabled}
-            className="w-full rounded-md border border-white/10 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-white/30"
-            value={value.brand}
-            onChange={(e) => onChange({ ...value, brand: e.target.value })}
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-        <div className="space-y-2">
-          <div className="text-xs text-white/60">Color (optional)</div>
-          <input
-            disabled={disabled}
-            className="w-full rounded-md border border-white/10 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-white/30"
-            value={value.color}
-            onChange={(e) => onChange({ ...value, color: e.target.value })}
-          />
-        </div>
-        <div className="space-y-2">
-          <div className="text-xs text-white/60">Dimensions (optional)</div>
-          <input
-            disabled={disabled}
-            className="w-full rounded-md border border-white/10 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-white/30"
-            value={value.dimensions}
-            onChange={(e) => onChange({ ...value, dimensions: e.target.value })}
-          />
         </div>
       </div>
 
@@ -227,13 +191,15 @@ export function ProductForm({ disabled, onSubmit, value, onChange, images, onIma
         />
       </div>
 
-      <button
-        type="submit"
-        disabled={!canSubmit}
-        className="w-full rounded-md bg-white px-4 py-2 text-sm font-medium text-black disabled:cursor-not-allowed disabled:opacity-40"
-      >
-        Generate
-      </button>
+      <div className="sticky bottom-0 -mx-4 border-t border-white/10 bg-black/40 px-4 py-3 backdrop-blur">
+        <button
+          type="submit"
+          disabled={!canSubmit}
+          className="w-full rounded-md bg-white px-4 py-2 text-sm font-medium text-black disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          Generate
+        </button>
+      </div>
     </form>
   )
 }

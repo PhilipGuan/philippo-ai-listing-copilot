@@ -11,7 +11,8 @@ export async function searchIntentExpansionAgent(ctx: AgentContext): Promise<Age
   const input = {
     product: ctx.product,
     keyword_context: ctx.keywords,
-    weakness: ctx.seoEngine?.weakness ?? []
+    weakness: ctx.seoEngine?.weakness ?? [],
+    custom_attributes: ctx.input.custom_attributes ?? []
   }
 
   try {
@@ -52,4 +53,3 @@ export async function searchIntentExpansionAgent(ctx: AgentContext): Promise<Age
     throw err
   }
 }
-

@@ -130,14 +130,23 @@ export type ImageInput = {
   dataUrl: string
 }
 
+export type CustomAttributeType = "text" | "multiline" | "select"
+
+export type CustomAttribute = {
+  key: string
+  type: CustomAttributeType
+  value: string
+}
+
 export type GenerateRequest = {
   product_name: string
-  material: string
+  material?: string
   features: string[]
   marketplace: Marketplace
   brand?: string
   color?: string
   dimensions?: string
   target_audience?: string
+  custom_attributes?: CustomAttribute[]
   images: ImageInput[]
 }

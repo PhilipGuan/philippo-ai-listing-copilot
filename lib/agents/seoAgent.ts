@@ -24,7 +24,8 @@ const ensureMinWords = (value: string, minWords: number) => {
 
 export async function seoAgent(ctx: AgentContext): Promise<AgentContext> {
   const productName = ctx.input.product_name.trim()
-  const material = ctx.input.material.trim()
+  const material = (ctx.product?.material ?? ctx.input.material ?? "").trim()
+  const custom_attributes = ctx.input.custom_attributes ?? []
   const sellingPoints = (ctx.product?.selling_points ?? ctx.input.features).map((f) => f.trim()).filter(Boolean)
   const primary = ctx.keywords?.primary_keywords?.[0] ?? productName
 
@@ -122,6 +123,7 @@ Input you will receive:
 - marketplace (US)
 - language (zh/en)
 - product context: category/material/selling_points/target_customer
+- custom_attributes: optional list of seller provided product attributes (key/type/value)
 - keyword intelligence: primary/secondary/long_tail keywords
 
 Self-check before final output:
@@ -138,7 +140,8 @@ If any check fails, rewrite until all checks pass, then output the final JSON.`
               marketplace: ctx.input.marketplace,
               language: ctx.language,
               product: ctx.product,
-              keywords: ctx.keywords
+              keywords: ctx.keywords,
+              custom_attributes
             },
             null,
             2

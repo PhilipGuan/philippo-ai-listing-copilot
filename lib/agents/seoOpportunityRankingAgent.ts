@@ -17,7 +17,8 @@ export async function seoOpportunityRankingAgent(ctx: AgentContext): Promise<Age
     weakness: ctx.seoEngine?.weakness ?? [],
     search_intent: ctx.seoEngine?.search_intent ?? [],
     feature_expand: ctx.seoEngine?.feature_expand ?? [],
-    customer: ctx.seoEngine?.customer ?? []
+    customer: ctx.seoEngine?.customer ?? [],
+    custom_attributes: ctx.input.custom_attributes ?? []
   }
 
   try {
@@ -82,4 +83,3 @@ export async function seoOpportunityRankingAgent(ctx: AgentContext): Promise<Age
     throw err
   }
 }
-
